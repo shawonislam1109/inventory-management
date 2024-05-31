@@ -12,12 +12,12 @@ import {
 } from "@mui/material";
 
 // assets
-import { DeleteFilled } from "@ant-design/icons";
+import RestoreOutlinedIcon from "@mui/icons-material/RestoreOutlined";
 import { LoadingButton } from "@mui/lab";
 
 // ==============================|| CUSTOMER - DELETE ||============================== //
 
-export default function DeletionAlert({
+export default function RestoreAlert({
   title,
   open,
   handleClose,
@@ -41,14 +41,14 @@ export default function DeletionAlert({
             color="error"
             sx={{ width: 72, height: 72, fontSize: "1.75rem" }}
           >
-            <DeleteFilled sx={{ color: "red" }} />
+            <RestoreOutlinedIcon sx={{ color: "green" }} />
           </Avatar>
           <Stack spacing={2}>
             <Typography variant="h5" align="center">
-              Are you sure you want to delete this item?
+              Are you sure you want to Restore this item?
             </Typography>
             <Typography align="center">
-              Deleting this item will remove it from its current location. The
+              Restore this item will be store it from its current location. The
               item will no longer be accessible from its current directory.
             </Typography>
           </Stack>
@@ -79,7 +79,7 @@ export default function DeletionAlert({
                 loading={isLoading}
                 variant="contained"
               >
-                Deleted
+                Restore
               </LoadingButton>
             </Box>
           </Stack>
@@ -89,7 +89,7 @@ export default function DeletionAlert({
   );
 }
 
-DeletionAlert.propTypes = {
+RestoreAlert.propTypes = {
   title: PropTypes.string,
   open: PropTypes.bool,
   handleClose: PropTypes.func,

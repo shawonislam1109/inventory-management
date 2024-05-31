@@ -121,6 +121,9 @@ function RenderRowAndColumn({
                 key={row.id}
                 sx={{
                   backgroundColor: "white",
+                  "&:nth-of-type(even)": {
+                    backgroundColor: "#dfe8e5",
+                  },
                   "&:hover": {
                     backgroundColor: "#dfe8e5",
                     transition: "background-color 0.3s ease",

@@ -56,12 +56,14 @@ const Navigation = () => {
         trigger={null}
         collapsible
         collapsed={collapsed}
+        width={"17rem"}
         style={{
           overflow: "auto",
           height: "100vh",
           position: "sticky",
           left: 0,
           top: 0,
+          zIndex: 60,
           bottom: 0,
         }}
         className={"sider-scrollbar "}
@@ -70,7 +72,7 @@ const Navigation = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={["1"]}
+          defaultSelectedKeys={["dashboard"]}
           items={items}
           onClick={handleMenuClick}
         />
@@ -83,6 +85,7 @@ const Navigation = () => {
             overflow: "auto",
             position: "sticky",
             left: 0,
+            zIndex: "100",
             top: 0,
           }}
         >

@@ -38,6 +38,7 @@ import {
   DebouncedInput,
   IndeterminateCheckbox,
 } from "../../third-party/ReactTableComponentRender";
+import { useEffect } from "react";
 
 const fuzzyFilter = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -71,9 +72,17 @@ function TableComponent({
   const [rowSelection, setRowSelection] = useState({});
 
   // LOCAL STATE
-  const [data] = useState([...tableData]);
+  const [data, setData] = useState([...tableData]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
+
+  // const data = useMemo(() => [...tableData] || [], [tableData]);
+
+  useEffect(() => {
+    if (tableData) {
+      setData([...tableData]);
+    }
+  }, [tableData]);
 
   // COLUMNS
   const columns = useMemo(
@@ -108,6 +117,8 @@ function TableComponent({
     ],
     [...tableDependency]
   );
+
+  //
 
   // TAN STACK TABLE IMPORT
   const {
@@ -179,7 +190,7 @@ function TableComponent({
       >
         <Stack>
           <Stack direction="row" gap={0.7}>
-            <Typography sx={{ fontSize: "2rem" }}>{title}</Typography>
+            <Typography variant="h4">{title}</Typography>
           </Stack>
           <Typography>
             {subheader} :{" "}

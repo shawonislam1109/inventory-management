@@ -39,7 +39,9 @@ const InputField = ({ formData, control, column }) => {
             md={12 / itemColumn["md"]}
             lg={12 / itemColumn["lg"]}
           >
-            <InputLabel required={item.required}>{item.label}</InputLabel>
+            <InputLabel color="error" required={item.required}>
+              {item.label}
+            </InputLabel>
 
             <Controller
               control={control}

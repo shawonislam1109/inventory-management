@@ -6,6 +6,6 @@ export const inventoryItems = {
   icon: <MailOutlined />,
   children: [
     { key: "products", label: "Product List", url: "/products" },
-    { key: "table", label: "Table" },
+    { key: "supplier", label: "Supplier" },
   ],
 };

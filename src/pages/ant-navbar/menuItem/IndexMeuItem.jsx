@@ -2,6 +2,7 @@ import { SettingOutlined } from "@ant-design/icons";
 import { dashboardItem } from "./DashboardItem";
 import { employeeItem } from "./EmployeeItem";
 import { inventoryItems } from "./Inventory";
+import { TrashItem } from "./Trash";
 
 export const items = [
   dashboardItem,
@@ -21,4 +22,5 @@ export const items = [
       { key: "12", label: "Option 12" },
     ],
   },
+  TrashItem,
 ];

@@ -1,5 +1,7 @@
 import { lazy } from "react";
 import Supplier from "../pages/inventory/supplier/Supplier.jsx";
+import Dashboard from "../pages/dashboard/Dashboard.jsx";
+import Trash from "../pages/Trash/Trash.jsx";
 const Product = lazy(() => import("../pages/inventory/product/Product.jsx"));
 
 const mainRoutes = [
@@ -18,6 +20,24 @@ const mainRoutes = [
       {
         path: "",
         element: <Supplier />,
+      },
+    ],
+  },
+  {
+    path: "/dashboard",
+    children: [
+      {
+        path: "",
+        element: <Dashboard />,
+      },
+    ],
+  },
+  {
+    path: "/trash",
+    children: [
+      {
+        path: "",
+        element: <Trash />,
       },
     ],
   },

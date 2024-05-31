@@ -35,10 +35,38 @@ const ThemeCustomization = ({ children }) => {
       h1: {
         fontSize: "2.5rem",
         fontWeight: 300,
+        lineHeight: 1.2,
+        margin: "1rem 0",
       },
       h2: {
         fontSize: "2rem",
         fontWeight: 300,
+        lineHeight: 1.3,
+        margin: "0.75rem 0",
+      },
+      h3: {
+        fontSize: "1.75rem",
+        fontWeight: 400,
+        lineHeight: 1.4,
+        margin: "0.75rem 0",
+      },
+      h4: {
+        fontSize: "1.5rem",
+        fontWeight: 500,
+        lineHeight: 0.5,
+        margin: "0.5rem 0",
+      },
+      h5: {
+        fontSize: "1.25rem",
+        fontWeight: 500,
+        lineHeight: 1.6,
+        margin: "0.5rem 0",
+      },
+      h6: {
+        fontSize: "1rem",
+        fontWeight: 500,
+        lineHeight: 1.7,
+        margin: "0.5rem 0",
       },
       body1: {
         fontSize: "1rem",
@@ -65,6 +93,34 @@ const ThemeCustomization = ({ children }) => {
         styleOverrides: {
           root: {
             borderRadius: 4,
+          },
+        },
+      },
+      MuiTextField: {
+        styleOverrides: {
+          root: {
+            "& .MuiInputBase-root": {
+              borderRadius: 4,
+              backgroundColor: "#f5f5f5",
+              "&:hover": {
+                backgroundColor: "#e0e0e0",
+              },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: "1rem",
+              color: "#333",
+            },
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: "#ccc",
+              },
+              "&:hover fieldset": {
+                borderColor: "#aaa",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "#3f51b5",
+              },
+            },
           },
         },
       },
