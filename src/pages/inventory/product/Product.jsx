@@ -1,29 +1,165 @@
+import { Box } from "@mui/material";
+import ActionCell from "../../../reuse-component/TableComponent/ActionCell";
+import { DeleteFilled } from "@ant-design/icons";
+import TableComponent from "../../../reuse-component/TableComponent/Table";
+import { useState } from "react";
+import useAuth from "../../../hooks/useAuth";
+import useDialog from "../../../hooks/useDialog";
+import DeletionAlert from "../../../maintenance/DeleteAlart";
+import { useNavigate } from "react-router-dom";
+import { useGetProductQuery } from "../../../api/service/product.service";
+import { useGetCategoryQuery } from "../../../api/service/category.service";
+import { convertToObject } from "../../../utils/convertToObject";
+
 const Product = () => {
+  // USE AUTH HOOKS
+  const { user } = useAuth();
+
+  // navigate router
+  const navigate = useNavigate();
+
+  // LOCAL STATE FOR PAGINATION
+  const [productPagination, setProductPagination] = useState({
+    pageIndex: 0,
+    pageSize: 1,
+  });
+
+  // ===================|| RTK HOOKS MUTATION ||=====================
+  const {
+    data: products,
+    isLoading: productIsLoading,
+    isSuccess: productIsSuccess,
+  } = useGetProductQuery(productPagination, {
+    skip: !user,
+  });
+
+  //   //   Category  DATA FROM QUERY
+  const { category, isLoading: categoryIsLoading } = useGetCategoryQuery(
+    user?.merchant,
+    {
+      skip: !user,
+      selectFromResult: ({ data, ...rest }) => {
+        return { category: convertToObject(data, "_id"), ...rest };
+      },
+    }
+  );
+
+  // USE DIALOG HOOKS
+  const { deleteOpen, handleDeleteDialogClose, handleDeleteDialogOpen } =
+    useDialog();
+
+  // LOCAL STATE
+  const [isUpdate, setUpdate] = useState(false);
+  const [product, setProduct] = useState({});
+
+  // HANDLE ADD BUTTON
+  const handleAddButton = () => {
+    navigate("/products/addAndUpdate?isUpdate=false");
+  };
+
+  // UPDATE Product HANDLER
+  const updateProductHandler = (data) => {
+    navigate(`/products/addAndUpdate/${data?._id}?isUpdate=true`);
+  };
+
+  // DELETE Product HANDLER
+  const deleteProductHandler = (data) => {
+    handleDeleteDialogOpen();
+    setProduct(data);
+  };
+
+  const deleteHandleSubmission = () => {};
+
+  // Table columns
+  const tableColumns = [
+    {
+      header: "Product Name",
+      accessorKey: "productType",
+    },
+    {
+      header: "Product Name",
+      accessorKey: "productName",
+    },
+    {
+      header: "Category",
+      accessorKey: "category",
+      cell: ({ row }) => {
+        return category && category[row?.original?.category]?.name;
+      },
+    },
+    {
+      header: "Unit",
+      accessorKey: "unit",
+    },
+    {
+      header: "Whole Sale Price",
+      accessorKey: "wholeSalePrice",
+    },
+    {
+      header: "Total Price",
+      accessorKey: "totalPrice",
+    },
+    {
+      id: "actions",
+      header: "Action",
+      cell: ({ row }) => {
+        return (
+          <>
+            <ActionCell
+              ellipsis={true}
+              row={row}
+              isExpandable={false}
+              setOpen={(data) => updateProductHandler(data)}
+              permissionKey="Product"
+              menuItems={[
+                {
+                  title: "Delete",
+                  icon: <DeleteFilled />,
+                  handleClick: deleteProductHandler,
+                },
+              ]}
+            />
+          </>
+        );
+      },
+    },
+  ];
+
   return (
-    <div>
-      Lorem ipsum dolor sit amet consectetur, adipisicing elit. Vero fuga dicta
-      hic officia fugiat, voluptatum cupiditate perferendis amet nesciunt
-      consectetur, dolorem laboriosam nemo veniam praesentium asperiores non
-      doloribus rerum molestias, laudantium debitis possimus quod eum voluptate
-      eveniet? Quasi iure cupiditate tenetur quam maxime quidem, nihil, eaque
-      fugiat aperiam commodi laudantium exercitationem voluptatum! Tempore
-      harum, deserunt quae ab nihil voluptatem totam fugiat aperiam. Eligendi,
-      magni harum mollitia eos facere tenetur debitis. Optio sequi suscipit
-      quasi. Amet ea quae laboriosam quisquam quod quasi, saepe corporis, labore
-      dolorum hic odio placeat unde quos ab modi eius rem veniam laborum. Quia
-      consequatur aliquid, animi neque facilis possimus eius fuga. Accusamus
-      soluta earum voluptatibus enim amet, illum tenetur dolor sit esse, fugiat
-      beatae quaerat atque, exercitationem reprehenderit eveniet distinctio
-      porro nulla qui. Adipisci ut nisi id delectus optio architecto ducimus
-      cumque, veritatis explicabo mollitia numquam ipsa recusandae voluptatem
-      dolore, ipsum vel dignissimos eius natus autem sint aspernatur
-      accusantium. Quidem, quam iure tempore officiis, dolores id amet vitae
-      laboriosam ipsum recusandae maxime in quia voluptate eos itaque nostrum
-      nesciunt iste mollitia perspiciatis, quisquam labore! Eius repellat ad
-      sint perspiciatis ducimus consequuntur? Esse, voluptate! Repellendus totam
-      quos quae fuga, corporis molestias deleniti sapiente odio sequi rem
-      incidunt.
-    </div>
+    <Box>
+      <TableComponent
+        {...{
+          title: "Product",
+          subheader: "Product of list",
+          tableColumns,
+          tableData: products?.data || [],
+          isLoading: false,
+          handleAddButton,
+          allDataCount: products?.totalDocument,
+          totalPages: products?.totalPages,
+          currentPage: products?.currentPage,
+          serverPaginationPageIndex: productPagination,
+          SetServerPaginationPageIndex: setProductPagination,
+          addBtnLabel: true,
+          isServerPagination: true,
+          tableDependency: [category],
+        }}
+      />
+
+      {/* delete dialog handler */}
+
+      {/* <DeleteAl */}
+
+      <DeletionAlert
+        {...{
+          title: "DELETE Product",
+          open: deleteOpen,
+          handleClose: handleDeleteDialogClose,
+          isLoading: false,
+          handleSubmission: deleteHandleSubmission,
+        }}
+      />
+    </Box>
   );
 };
 

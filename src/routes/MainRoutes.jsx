@@ -2,9 +2,12 @@ import { lazy } from "react";
 import Supplier from "../pages/inventory/supplier/Supplier.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Trash from "../pages/Trash/Trash.jsx";
+import Category from "../pages/inventory/product/category/Category.jsx";
+import ProductAddAndUpdate from "../pages/inventory/product/product-add/AddProduct.jsx";
 const Product = lazy(() => import("../pages/inventory/product/Product.jsx"));
 
 const mainRoutes = [
+  // @PRODUCT ROUTES
   {
     path: "/products",
     children: [
@@ -12,8 +15,18 @@ const mainRoutes = [
         path: "",
         element: <Product />,
       },
+      {
+        path: "addAndUpdate",
+        element: <ProductAddAndUpdate />,
+      },
+      {
+        path: "addAndUpdate/:productId",
+        element: <ProductAddAndUpdate />,
+      },
     ],
   },
+
+  // @SUPPLIER ROUTES
   {
     path: "/supplier",
     children: [
@@ -23,6 +36,8 @@ const mainRoutes = [
       },
     ],
   },
+
+  // DASHBOARD ROUTES
   {
     path: "/dashboard",
     children: [
@@ -32,12 +47,26 @@ const mainRoutes = [
       },
     ],
   },
+
+  // TRASH ROUTES
   {
     path: "/trash",
     children: [
       {
         path: "",
         element: <Trash />,
+      },
+    ],
+  },
+
+  // @CATEGORY ROUTES
+
+  {
+    path: "/category",
+    children: [
+      {
+        path: "",
+        element: <Category />,
       },
     ],
   },

@@ -19,6 +19,8 @@ import PropTypes from "prop-types";
 import { Controller } from "react-hook-form";
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { DatePicker, DateTimePicker, TimePicker } from "@mui/x-date-pickers";
+import dayjs from "dayjs";
 
 const InputField = ({ formData, control, column }) => {
   const theme = useTheme();
@@ -39,8 +41,11 @@ const InputField = ({ formData, control, column }) => {
             md={12 / itemColumn["md"]}
             lg={12 / itemColumn["lg"]}
           >
-            <InputLabel color="error" required={item.required}>
+            <InputLabel sx={{ display: "flex", alignItems: "center" }}>
               {item.label}
+              {item.required && (
+                <span style={{ color: "red", marginLeft: "4px" }}>*</span>
+              )}
             </InputLabel>
 
             <Controller
@@ -84,8 +89,11 @@ const InputField = ({ formData, control, column }) => {
             md={12 / itemColumn["md"]}
             lg={12 / itemColumn["lg"]}
           >
-            <InputLabel color="error" required={item.required}>
+            <InputLabel sx={{ display: "flex", alignItems: "center" }}>
               {item.label}
+              {item.required && (
+                <span style={{ color: "red", marginLeft: "4px" }}>*</span>
+              )}
             </InputLabel>
 
             <Controller
@@ -152,7 +160,12 @@ const InputField = ({ formData, control, column }) => {
             md={12 / itemColumn["md"]}
             lg={12 / itemColumn["lg"]}
           >
-            <InputLabel required={item.required}>{item.label}</InputLabel>
+            <InputLabel sx={{ display: "flex", alignItems: "center" }}>
+              {item.label}
+              {item.required && (
+                <span style={{ color: "red", marginLeft: "4px" }}>*</span>
+              )}
+            </InputLabel>
 
             <Controller
               control={control}
@@ -209,7 +222,12 @@ const InputField = ({ formData, control, column }) => {
             md={12 / itemColumn["md"]}
             lg={12 / itemColumn["lg"]}
           >
-            <InputLabel required={item.required}>{item.label}</InputLabel>
+            <InputLabel sx={{ display: "flex", alignItems: "center" }}>
+              {item.label}
+              {item.required && (
+                <span style={{ color: "red", marginLeft: "4px" }}>*</span>
+              )}
+            </InputLabel>
             <Controller
               name={item.name}
               control={control}
@@ -268,7 +286,12 @@ const InputField = ({ formData, control, column }) => {
             md={12 / itemColumn["md"]}
             lg={12 / itemColumn["lg"]}
           >
-            <InputLabel required={item.required}>{item.label}</InputLabel>
+            <InputLabel sx={{ display: "flex", alignItems: "center" }}>
+              {item.label}
+              {item.required && (
+                <span style={{ color: "red", marginLeft: "4px" }}>*</span>
+              )}
+            </InputLabel>
             <Controller
               name={item.name}
               control={control}
@@ -299,6 +322,218 @@ const InputField = ({ formData, control, column }) => {
                         );
                       })}
                     </RadioGroup>
+                    {Boolean(error) && (
+                      <FormHelperText error id={item.id}>
+                        {error?.message}
+                      </FormHelperText>
+                    )}
+                  </>
+                );
+              }}
+            />
+          </Grid>
+        );
+      } else if (item.type === "date-picker") {
+        return (
+          <Grid
+            item
+            key={item.id}
+            xs={12 / itemColumn["xs"]}
+            sm={12 / itemColumn["sm"]}
+            md={12 / itemColumn["md"]}
+            lg={12 / itemColumn["lg"]}
+          >
+            <InputLabel sx={{ display: "flex", alignItems: "center" }}>
+              {item.label}
+              {item.required && (
+                <span style={{ color: "red", marginLeft: "4px" }}>*</span>
+              )}
+            </InputLabel>
+            <Controller
+              key={item.id}
+              control={control}
+              name={item.name}
+              render={({ field, fieldState: { error } }) => {
+                return (
+                  <>
+                    <DatePicker
+                      format={item.dateFormat || "MMMM DD, YYYY"}
+                      value={dayjs(field.value)}
+                      inputRef={field.ref}
+                      disabled={item.disabled}
+                      onChange={(date) =>
+                        item.extraOnchange
+                          ? item.extraOnchange(dayjs(date).toISOString())
+                          : field.onChange(dayjs(date).toISOString())
+                      }
+                      minDate={item.minDate ? dayjs(item.minDate) : null}
+                      maxDate={item.maxDate ? dayjs(new Date()) : null}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: Boolean(error),
+                          size: item.size,
+                        },
+                      }}
+                    />
+                    {Boolean(error) && (
+                      <FormHelperText error id={item.id}>
+                        {error?.message}
+                      </FormHelperText>
+                    )}
+                  </>
+                );
+              }}
+            />
+          </Grid>
+        );
+      } else if (item.type === "time-picker") {
+        return (
+          <Grid
+            item
+            key={item.id}
+            xs={12 / itemColumn["xs"]}
+            sm={12 / itemColumn["sm"]}
+            md={12 / itemColumn["md"]}
+            lg={12 / itemColumn["lg"]}
+          >
+            <InputLabel sx={{ display: "flex", alignItems: "center" }}>
+              {item.label}
+              {item.required && (
+                <span style={{ color: "red", marginLeft: "4px" }}>*</span>
+              )}
+            </InputLabel>
+            <Controller
+              key={item.id}
+              name={item.name}
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <TimePicker
+                    ampm
+                    openTo="hours"
+                    ref={field.ref}
+                    onChange={(date) => field.onChange(date)}
+                    views={["hours", "minutes"]}
+                    disabled={item.disabled}
+                    format="h:mm a"
+                    value={dayjs(field.value)}
+                    minutesStep={item.minutesStep || 0}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error: Boolean(error),
+                        size: item.size,
+                      },
+                    }}
+                  />
+                  {Boolean(error) && (
+                    <FormHelperText error id={item.id}>
+                      {error?.message}
+                    </FormHelperText>
+                  )}
+                </>
+              )}
+            />
+          </Grid>
+        );
+      } else if (item.type === "date-time-picker") {
+        return (
+          <Grid
+            item
+            key={item.id}
+            xs={12 / itemColumn["xs"]}
+            sm={12 / itemColumn["sm"]}
+            md={12 / itemColumn["md"]}
+            lg={12 / itemColumn["lg"]}
+          >
+            <InputLabel sx={{ display: "flex", alignItems: "center" }}>
+              {item.label}
+              {item.required && (
+                <span style={{ color: "red", marginLeft: "4px" }}>*</span>
+              )}
+            </InputLabel>
+            <Controller
+              key={item.id}
+              name={item.name}
+              control={control}
+              render={({ field, fieldState: { error } }) => {
+                return (
+                  <>
+                    <DateTimePicker
+                      inputRef={field.ref}
+                      minutesStep={item.minutesStep || 0}
+                      format={item.dateFormat || "MMMM DD, YYYY h:mm A"}
+                      timeSteps={{ hours: item.hour, minutes: item.minutes }}
+                      value={dayjs(field.value)}
+                      onChange={(date) =>
+                        field.onChange(dayjs(date).toISOString())
+                      }
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: Boolean(error),
+                          size: item.size,
+                        },
+                      }}
+                    />
+
+                    {Boolean(error) && (
+                      <FormHelperText error id={item.id}>
+                        {error?.message}
+                      </FormHelperText>
+                    )}
+                  </>
+                );
+              }}
+            />
+          </Grid>
+        );
+      } else if (item.type === "date-time-picker-fixedTime") {
+        return (
+          <Grid
+            item
+            key={item.id}
+            xs={12 / itemColumn["xs"]}
+            sm={12 / itemColumn["sm"]}
+            md={12 / itemColumn["md"]}
+            lg={12 / itemColumn["lg"]}
+          >
+            <InputLabel sx={{ display: "flex", alignItems: "center" }}>
+              {item.label}
+              {item.required && (
+                <span style={{ color: "red", marginLeft: "4px" }}>*</span>
+              )}
+            </InputLabel>
+            <Controller
+              key={item.id}
+              name={item.name}
+              control={control}
+              render={({ field, fieldState: { error } }) => {
+                return (
+                  <>
+                    <DatePicker
+                      inputRef={field.ref}
+                      minutesStep={item.minutesStep || 0}
+                      format={item.dateFormat || "MMMM DD, YYYY h:mm A"}
+                      value={dayjs(field.value)
+                        .hour(item.hour)
+                        .minute(item.minutes)}
+                      onChange={(date) => {
+                        const updatedDate = dayjs(date)
+                          .hour(item.hour)
+                          .minute(item.minutes);
+                        field.onChange(updatedDate);
+                      }}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: Boolean(error),
+                          size: item.size,
+                        },
+                      }}
+                    />
+
                     {Boolean(error) && (
                       <FormHelperText error id={item.id}>
                         {error?.message}

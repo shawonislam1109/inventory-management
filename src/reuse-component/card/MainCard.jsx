@@ -60,7 +60,6 @@ const MainCard = forwardRef(
         {...others}
         sx={{
           position: "relative",
-          border: border ? "1px solid" : "none",
           borderRadius: 1,
           // borderColor:
           //   theme.palette.mode === ThemeMode.DARK
@@ -106,7 +105,11 @@ const MainCard = forwardRef(
           >
             <CardHeader
               sx={headerSX}
-              titleTypographyProps={{ variant: "subtitle1" }}
+              titleTypographyProps={{
+                variant: "h5",
+                fontWeight: "bold",
+                color: "gray",
+              }}
               title={title}
               action={secondary}
               subheader={subheader}

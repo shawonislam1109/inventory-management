@@ -1,15 +1,19 @@
 import CustomTabs from "../../utils/tabs/CustomTabs";
+import CategoryTrash from "./CategoryTrash";
 
 import SupplierTrash from "./SupplierTrash";
 
 const Trash = () => {
   // TABS ITEMS
-  const tabsItems = ["Supplier"];
+  const tabsItems = ["Supplier", "Category"];
 
-  // TABS COMPOENT
+  // TABS COMPONENTS
   const tabPanels = [
     {
       component: <SupplierTrash />,
+    },
+    {
+      component: <CategoryTrash />,
     },
   ];
 

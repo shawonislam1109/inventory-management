@@ -7,5 +7,6 @@ export const inventoryItems = {
   children: [
     { key: "products", label: "Product List", url: "/products" },
     { key: "supplier", label: "Supplier" },
+    { key: "category", label: "Category" },
   ],
 };

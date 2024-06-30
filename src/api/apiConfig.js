@@ -8,7 +8,6 @@ const api = createApi({
     mode: "cors",
 
     prepareHeaders(headers, { getState }) {
-      console.log(import.meta.env.VITE_API_URL);
       const { token, branch } = getState().auth;
       if (!token) return headers;
       headers.set("Authorization", "Bearer " + token);

@@ -58,13 +58,17 @@ function TableComponent({
   tableColumns = [],
   tableDependency = [],
   tableData = [],
-  // isServerPagination,
+  isServerPagination,
+  SetServerPaginationPageIndex,
+  serverPaginationPageIndex,
 }) {
   // pagination state
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   });
+
+  // console.log(pagination);
   // column visibility state
   const [columnVisibility, setColumnVisibility] = useState();
 
@@ -90,6 +94,7 @@ function TableComponent({
       {
         ...(tableColumns?.length > 0 && {
           id: "select",
+
           header: ({ table }) => (
             <IndeterminateCheckbox
               {...{
@@ -139,6 +144,8 @@ function TableComponent({
   } = useReactTable({
     columns,
     data,
+    manualPagination: isServerPagination,
+    rowCount: allDataCount,
     debugTable: true,
     debugHeaders: true,
     debugColumns: false,
@@ -147,14 +154,20 @@ function TableComponent({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
+    onPaginationChange: isServerPagination
+      ? SetServerPaginationPageIndex
+      : setPagination,
+    autoResetPageIndex: false,
 
     state: {
-      pagination,
+      pagination: isServerPagination ? serverPaginationPageIndex : pagination,
       columnVisibility,
       globalFilter,
       columnFilters,
       rowSelection,
+    },
+    initialState: {
+      pagination,
     },
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
@@ -374,8 +387,11 @@ TableComponent.propTypes = {
   allDataCount: PropTypes.number,
   subheader: PropTypes.string,
   refetch: PropTypes.func,
+  SetServerPaginationPageIndex: PropTypes.func,
   hasPrintMenuBtn: PropTypes.func,
   addBtnLabel: PropTypes.bool,
+  serverPaginationPageIndex: PropTypes.object,
+  isServerPagination: PropTypes.bool,
   handleAddButton: PropTypes.func,
   tableColumns: PropTypes.array,
   tableDependency: PropTypes.array,

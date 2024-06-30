@@ -12,6 +12,7 @@ import { convertToLabel } from "../../utils/convertToLabel";
 import { useDispatch } from "react-redux";
 import { activeBranchSetup } from "../../store/reducer/auth";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const { Header, Sider, Content } = Layout;
 
@@ -19,6 +20,7 @@ const Navigation = () => {
   // -> USE DISPATCH HOOK
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // => USE AUTH HOOK
   const { user, activeBranch } = useAuth();
@@ -72,7 +74,7 @@ const Navigation = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={["dashboard"]}
+          defaultSelectedKeys={location.pathname.split("/")[1]}
           items={items}
           onClick={handleMenuClick}
         />
@@ -84,60 +86,56 @@ const Navigation = () => {
             background: colorBgContainer,
             overflow: "auto",
             position: "sticky",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
             left: 0,
             zIndex: "100",
             top: 0,
           }}
         >
+          <Box>
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={{
+                fontSize: "16px",
+                width: 50,
+                height: 50,
+              }}
+            />
+          </Box>
+
           <Stack
+            width={240}
             direction="row"
-            justifyContent="space-between"
-            alignItems="center"
+            justifyContent="center" // Use center to align items horizontally
+            alignItems="center" // Use center to align items vertically
+            sx={{ mr: 2 }}
+            spacing={2} // Add spacing between elements
           >
-            <Box>
-              <Button
-                type="text"
-                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                onClick={() => setCollapsed(!collapsed)}
-                style={{
-                  fontSize: "16px",
-                  width: 50,
-                  height: 50,
+            <Box sx={{ width: 200 }}>
+              <Autocomplete
+                onChange={(event, data) => {
+                  if (data) {
+                    activeBranchHandler(data);
+                  }
                 }}
+                value={
+                  branches?.find((item) => item.value === activeBranch?._id) ||
+                  null
+                }
+                options={branches || []}
+                getOptionLabel={(option) => option?.label}
+                disableClearable
+                renderInput={(params) => (
+                  <TextField {...params} variant="outlined" size="small" />
+                )}
               />
             </Box>
 
-            <Stack
-              width={240}
-              direction="row"
-              justifyContent="center" // Use center to align items horizontally
-              alignItems="center" // Use center to align items vertically
-              sx={{ mr: 2 }}
-              spacing={2} // Add spacing between elements
-            >
-              <Box sx={{ width: 200 }}>
-                <Autocomplete
-                  onChange={(event, data) => {
-                    if (data) {
-                      activeBranchHandler(data);
-                    }
-                  }}
-                  value={
-                    branches?.find(
-                      (item) => item.value === activeBranch?._id
-                    ) || null
-                  }
-                  options={branches || []}
-                  getOptionLabel={(option) => option?.label}
-                  disableClearable
-                  renderInput={(params) => (
-                    <TextField {...params} variant="outlined" size="small" />
-                  )}
-                />
-              </Box>
-
-              <ProfileMenu />
-            </Stack>
+            <ProfileMenu />
           </Stack>
         </Header>
         <Content

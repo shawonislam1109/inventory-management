@@ -158,7 +158,7 @@ function RenderRowAndColumn({
               onChange={(e) => setPageSize(Number(e.target.value))}
               label="Show"
             >
-              {[10, 20, 30, 40, 50, 100].map((pageSize) => (
+              {[1, 10, 20, 30, 40, 50, 100].map((pageSize) => (
                 <MenuItem key={pageSize} value={pageSize}>
                   {pageSize}
                 </MenuItem>
@@ -190,7 +190,7 @@ function RenderRowAndColumn({
           <IconButton
             variant="outlined"
             onClick={() => nextPage()}
-            disabled={getCanNextPage()}
+            disabled={!getCanNextPage()}
           >
             <StepForwardOutlined />
           </IconButton>

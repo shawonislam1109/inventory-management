@@ -2,10 +2,10 @@ import api from "../../api/apiConfig";
 
 export const supplierApi = api.injectEndpoints({
   endpoints: (build) => ({
-    getSupplier: build.query({
+    getCategory: build.query({
       query: () => {
         return {
-          url: "/supplier",
+          url: "/category",
           method: "GET",
         };
       },
@@ -14,10 +14,10 @@ export const supplierApi = api.injectEndpoints({
       },
     }),
 
-    getSupplierTrash: build.query({
+    getCategoryTrash: build.query({
       query: () => {
         return {
-          url: "/supplier/trash",
+          url: "/category/trash",
           method: "GET",
         };
       },
@@ -26,10 +26,10 @@ export const supplierApi = api.injectEndpoints({
       },
     }),
 
-    createSupplier: build.mutation({
+    createCategory: build.mutation({
       query: ({ data }) => {
         return {
-          url: "/supplier",
+          url: "/category",
           method: "POST",
           body: data,
         };
@@ -43,7 +43,7 @@ export const supplierApi = api.injectEndpoints({
             data: { data },
           } = await queryFulfilled;
           dispatch(
-            api.util.updateQueryData("getSupplier", merchant, (draft) => {
+            api.util.updateQueryData("getCategory", merchant, (draft) => {
               draft.unshift(data);
             })
           );
@@ -55,10 +55,10 @@ export const supplierApi = api.injectEndpoints({
       },
     }),
 
-    updateSupplier: build.mutation({
+    updateCategory: build.mutation({
       query: ({ data }) => {
         return {
-          url: `/supplier/${data._id}`,
+          url: `/category/${data._id}`,
           method: "PATCH",
           body: data,
         };
@@ -73,7 +73,7 @@ export const supplierApi = api.injectEndpoints({
           } = await queryFulfilled;
 
           dispatch(
-            api.util.updateQueryData("getSupplier", merchant, (draft) => {
+            api.util.updateQueryData("getCategory", merchant, (draft) => {
               const findIndex = draft.findIndex(
                 (item) => item._id === data._id
               );
@@ -88,10 +88,10 @@ export const supplierApi = api.injectEndpoints({
       },
     }),
 
-    deleteAndRestoreSupplier: build.mutation({
-      query: ({ supplierId }) => {
+    deleteAndRestoreCategory: build.mutation({
+      query: ({ categoryId }) => {
         return {
-          url: `/supplier/delete/${supplierId}`,
+          url: `/category/delete/${categoryId}`,
           method: "PATCH",
         };
       },
@@ -105,12 +105,12 @@ export const supplierApi = api.injectEndpoints({
           } = await queryFulfilled;
 
           dispatch(
-            api.util.updateQueryData("getSupplier", merchant, (draft) => {
+            api.util.updateQueryData("getCategory", merchant, (draft) => {
               return draft.filter((item) => item._id !== data._id);
             })
           );
           dispatch(
-            api.util.updateQueryData("getSupplierTrash", merchant, (draft) => {
+            api.util.updateQueryData("getCategoryTrash", merchant, (draft) => {
               draft.unshift(data);
             })
           );
@@ -122,10 +122,10 @@ export const supplierApi = api.injectEndpoints({
       },
     }),
 
-    restoreSupplier: build.mutation({
-      query: ({ supplierId }) => {
+    restoreCategory: build.mutation({
+      query: ({ categoryId }) => {
         return {
-          url: `/supplier/restore/${supplierId}`,
+          url: `/category/restore/${categoryId}`,
           method: "PATCH",
         };
       },
@@ -139,12 +139,12 @@ export const supplierApi = api.injectEndpoints({
           } = await queryFulfilled;
 
           dispatch(
-            api.util.updateQueryData("getSupplier", merchant, (draft) => {
+            api.util.updateQueryData("getCategory", merchant, (draft) => {
               draft.unshift(data);
             })
           );
           dispatch(
-            api.util.updateQueryData("getSupplierTrash", merchant, (draft) => {
+            api.util.updateQueryData("getCategoryTrash", merchant, (draft) => {
               return draft.filter((item) => item._id !== data._id);
             })
           );
@@ -159,10 +159,10 @@ export const supplierApi = api.injectEndpoints({
 });
 
 export const {
-  useGetSupplierQuery,
-  useGetSupplierTrashQuery,
-  useUpdateSupplierMutation,
-  useCreateSupplierMutation,
-  useDeleteAndRestoreSupplierMutation,
-  useRestoreSupplierMutation,
+  useGetCategoryQuery,
+  useCreateCategoryMutation,
+  useUpdateCategoryMutation,
+  useGetCategoryTrashQuery,
+  useRestoreCategoryMutation,
+  useDeleteAndRestoreCategoryMutation,
 } = supplierApi;

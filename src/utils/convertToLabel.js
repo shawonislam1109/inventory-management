@@ -8,3 +8,13 @@ export const convertToLabel = (data, la, va) => {
 
   return convertToLabelData;
 };
+
+// Add convertToLabel to Array.prototype
+Array.prototype.convertToLabel = function (la, va) {
+  return this.reduce((acc, curr) => {
+    if (curr && la && va) {
+      acc.push({ label: curr[la], value: curr[va] });
+    }
+    return acc;
+  }, []);
+};

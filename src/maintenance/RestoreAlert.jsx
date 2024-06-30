@@ -74,7 +74,7 @@ export default function RestoreAlert({
             </Box>
             <Box>
               <LoadingButton
-                color="error"
+                color="success"
                 onClick={handleSubmission}
                 loading={isLoading}
                 variant="contained"

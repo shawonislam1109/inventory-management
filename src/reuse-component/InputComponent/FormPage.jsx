@@ -11,6 +11,8 @@ import PropTypes from "prop-types";
 import InputField from "./Input";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SendIcon from "@mui/icons-material/Send";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const FormPage = ({
   formTitle,
@@ -37,9 +39,11 @@ const FormPage = ({
             onSubmit={handleSubmit(formSubmit)}
             id={formId}
           >
-            <InputField formData={formData} column={column} control={control}>
-              {children}
-            </InputField>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <InputField formData={formData} column={column} control={control}>
+                {children}
+              </InputField>
+            </LocalizationProvider>
 
             <Grid item xs={12}>
               <Divider />
