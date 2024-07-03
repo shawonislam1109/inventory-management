@@ -71,9 +71,13 @@ export const productApi = api.injectEndpoints({
           const {
             data: { data },
           } = await queryFulfilled;
+
+          console.log(data);
           dispatch(
             api.util.updateQueryData("getProduct", merchant, (draft) => {
-              draft.unshift(data);
+              draft.data.unshift(data);
+              draft.totalDocument += 1;
+              draft.totalPages += 1;
             })
           );
           handleCloseDialog();
@@ -104,10 +108,10 @@ export const productApi = api.injectEndpoints({
 
           dispatch(
             api.util.updateQueryData("getProduct", merchant, (draft) => {
-              const findIndex = draft.findIndex(
+              const findIndex = draft.data.findIndex(
                 (item) => item._id === data._id
               );
-              draft[findIndex] = data;
+              draft.data[findIndex] = data;
             })
           );
           handleCloseDialog();

@@ -48,6 +48,19 @@ const ProductAddAndUpdate = () => {
   // use searchParams
   const isUpdate = searchParams.get("isUpdate") === "true";
 
+  // SEARCH QUERY
+  const queryParams = () => {
+    const params = new URLSearchParams(location.search);
+    const queryObject = {};
+
+    params.forEach((value, key) => {
+      if (key == "pageSize" || key === "pageIndex") {
+        queryObject[key] = parseInt(value);
+      }
+    });
+    return queryObject;
+  };
+
   // LOCAL STATE
   const [defaultValues, setDefaultVales] = useState({ ...DEFAULT_VALUES });
   const [unitState, setUnitState] = useState("");
@@ -138,6 +151,7 @@ const ProductAddAndUpdate = () => {
         }
       ),
     productQuantity: Yup.object().shape(unitState),
+    eachProductQuantity: Yup.object().shape(unitState),
     purchasePrice: Yup.object().shape(unitState),
     salePrice: Yup.object().shape(unitState),
     totalPrice: Yup.number()
@@ -158,9 +172,9 @@ const ProductAddAndUpdate = () => {
   //   FORM SUBMIT HANDLER
   const formSubmit = (data) => {
     if (!isUpdate) {
-      createProduct({ data, merchant: user?.merchant, setError, reset });
+      createProduct({ data, merchant: queryParams(), setError, reset });
     } else if (isUpdate) {
-      updateProduct({ data, merchant: user?.merchant, setError, reset });
+      updateProduct({ data, merchant: queryParams(), setError, reset });
     }
   };
 
@@ -333,6 +347,46 @@ const ProductAddAndUpdate = () => {
             </LocalizationProvider>
           </Grid>
 
+          {/*EACH PRODUCT QUANTITY   */}
+          {selectedUnit(watch("unit")).length > 0 && (
+            <MainCard title={"Each Product Quantity"}>
+              <Grid container spacing={2}>
+                {selectedUnit(watch("unit")).map((item, index) => {
+                  return (
+                    <Grid item xs={12} md={6} lg={4} key={index}>
+                      <InputLabel
+                        sx={{ display: "flex", alignItems: "center" }}
+                      >
+                        {item}
+                        <span style={{ color: "red", marginLeft: "4px" }}>
+                          *
+                        </span>
+                      </InputLabel>
+
+                      <Controller
+                        control={control}
+                        name={`eachProductQuantity.${item}`}
+                        render={({ field, fieldState: { error } }) => (
+                          <TextField
+                            {...field}
+                            size="small"
+                            inputRef={field.ref}
+                            type="number"
+                            placeholder={`Enter Product Quantity ${item}`}
+                            value={field.value}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            error={Boolean(error)}
+                            helperText={error?.message}
+                            fullWidth
+                          />
+                        )}
+                      />
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            </MainCard>
+          )}
           {/* PRODUCT QUANTITY   */}
           {selectedUnit(watch("unit")).length > 0 && (
             <MainCard title={"Product Quantity"}>

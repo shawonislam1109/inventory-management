@@ -4,6 +4,7 @@ import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Trash from "../pages/Trash/Trash.jsx";
 import Category from "../pages/inventory/product/category/Category.jsx";
 import ProductAddAndUpdate from "../pages/inventory/product/product-add/AddProduct.jsx";
+import Stock from "../pages/stock/Stock.jsx";
 const Product = lazy(() => import("../pages/inventory/product/Product.jsx"));
 
 const mainRoutes = [
@@ -67,6 +68,17 @@ const mainRoutes = [
       {
         path: "",
         element: <Category />,
+      },
+    ],
+  },
+
+  // @STOCKS DATA
+  {
+    path: "stocks",
+    children: [
+      {
+        path: "",
+        element: <Stock />,
       },
     ],
   },

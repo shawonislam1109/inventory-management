@@ -8,5 +8,6 @@ export const inventoryItems = {
     { key: "products", label: "Product List", url: "/products" },
     { key: "supplier", label: "Supplier" },
     { key: "category", label: "Category" },
+    { key: "stocks", label: "Stocks" },
   ],
 };

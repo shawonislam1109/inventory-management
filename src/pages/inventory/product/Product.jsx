@@ -21,7 +21,7 @@ const Product = () => {
   // LOCAL STATE FOR PAGINATION
   const [productPagination, setProductPagination] = useState({
     pageIndex: 0,
-    pageSize: 1,
+    pageSize: 10,
   });
 
   // ===================|| RTK HOOKS MUTATION ||=====================
@@ -54,12 +54,16 @@ const Product = () => {
 
   // HANDLE ADD BUTTON
   const handleAddButton = () => {
-    navigate("/products/addAndUpdate?isUpdate=false");
+    navigate(
+      `/products/addAndUpdate?isUpdate=false&pageIndex=${productPagination.pageIndex}&pageSize=${productPagination.pageSize}`
+    );
   };
 
   // UPDATE Product HANDLER
   const updateProductHandler = (data) => {
-    navigate(`/products/addAndUpdate/${data?._id}?isUpdate=true`);
+    navigate(
+      `/products/addAndUpdate/${data?._id}?isUpdate=true&pageIndex=${productPagination.pageIndex}&pageSize=${productPagination.pageSize}`
+    );
   };
 
   // DELETE Product HANDLER
@@ -140,8 +144,8 @@ const Product = () => {
           currentPage: products?.currentPage,
           serverPaginationPageIndex: productPagination,
           SetServerPaginationPageIndex: setProductPagination,
-          addBtnLabel: true,
           isServerPagination: true,
+          addBtnLabel: true,
           tableDependency: [category],
         }}
       />
