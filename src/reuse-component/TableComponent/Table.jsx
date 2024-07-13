@@ -85,6 +85,8 @@ function TableComponent({
   useEffect(() => {
     if (tableData) {
       setData([...tableData]);
+    } else {
+      setData([]);
     }
   }, [tableData]);
 

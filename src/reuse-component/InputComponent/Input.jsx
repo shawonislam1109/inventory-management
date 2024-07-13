@@ -22,7 +22,7 @@ import { useState } from "react";
 import { DatePicker, DateTimePicker, TimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 
-const InputField = ({ formData, control, column }) => {
+const InputField = ({ formData, control, column, children }) => {
   const theme = useTheme();
   //common input types
   const commonInputTypes = ["text", "email", "number", "textarea"];
@@ -555,6 +555,7 @@ InputField.propTypes = {
   formData: PropTypes.array,
   control: PropTypes.object,
   column: PropTypes.object,
+  children: PropTypes.node,
   commonInputTypes: PropTypes.array,
 };
 

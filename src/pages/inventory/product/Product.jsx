@@ -137,7 +137,7 @@ const Product = () => {
           subheader: "Product of list",
           tableColumns,
           tableData: products?.data || [],
-          isLoading: false,
+          isLoading: productIsLoading,
           handleAddButton,
           allDataCount: products?.totalDocument,
           totalPages: products?.totalPages,

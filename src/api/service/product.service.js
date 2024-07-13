@@ -4,7 +4,7 @@ export const productApi = api.injectEndpoints({
   endpoints: (build) => ({
     // GET PRODUCT
     getProduct: build.query({
-      query: ({ pageIndex = 1, pageSize = 1 }) => {
+      query: ({ pageIndex = 1, pageSize = 10 }) => {
         return {
           url: `/product?page=${pageIndex + 1}&limit=${pageSize}`,
           method: "GET",
@@ -72,13 +72,24 @@ export const productApi = api.injectEndpoints({
             data: { data },
           } = await queryFulfilled;
 
-          console.log(data);
           dispatch(
             api.util.updateQueryData("getProduct", merchant, (draft) => {
               draft.data.unshift(data);
               draft.totalDocument += 1;
               draft.totalPages += 1;
             })
+          );
+
+          dispatch(
+            api.util.updateQueryData(
+              "getStock",
+              { pageIndex: 0, pageSize: 10 },
+              (draft) => {
+                draft.data.unshift(data?.stock);
+                draft.totalDocument += 1;
+                draft.totalPages += 1;
+              }
+            )
           );
           handleCloseDialog();
           reset();
