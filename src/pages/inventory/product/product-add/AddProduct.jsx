@@ -468,7 +468,6 @@ const ProductAddAndUpdate = () => {
             </MainCard>
           )}
           {/* PRODUCT SALE PRICE   */}
-
           {selectedUnit(watch("unit")).length > 0 && (
             <MainCard title={"Product Sale Price"}>
               <Grid container spacing={2}>

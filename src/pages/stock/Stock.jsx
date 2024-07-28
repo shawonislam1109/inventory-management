@@ -41,7 +41,7 @@ const Stock = () => {
   // Table columns
   const tableColumns = [
     {
-      header: "Product Name",
+      header: "Product Type",
       accessorKey: "productType",
     },
     {
@@ -80,7 +80,7 @@ const Stock = () => {
     },
     {
       header: "PurchasePrice",
-      accessorKey: "product",
+      accessorKey: "PurchasePrice",
       cell: ({ row }) => {
         return (
           <>
@@ -99,7 +99,7 @@ const Stock = () => {
     },
     {
       header: "salePrice",
-      accessorKey: "product",
+      accessorKey: "salePrice",
       cell: ({ row }) => {
         return (
           <>

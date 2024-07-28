@@ -1,33 +1,41 @@
 import * as Yup from "yup";
 import { useLocation } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
-import { LocalizationProvider } from "@mui/x-date-pickers";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import SendIcon from "@mui/icons-material/Send";
 import { LoadingButton } from "@mui/lab";
 import { Controller } from "react-hook-form";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
 import { useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import useAuth from "../../hooks/useAuth";
 import { convertToLabel } from "../../utils/convertToLabel";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
-
 import {
-  useCreateProductMutation,
-  useGetProductByIdQuery,
-  useGetProductQuery,
-  useUpdateProductMutation,
-} from "../../api/service/product.service";
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  FormHelperText,
+} from "@mui/material";
+
+import { useGetProductQuery } from "../../api/service/product.service";
 import useFormHook from "../../hooks/useHookForm";
 import MainCard from "../../reuse-component/card/MainCard";
-import { Checkbox, Grid, InputLabel, Stack, TextField } from "@mui/material";
+import { Checkbox, Grid, Stack, TextField } from "@mui/material";
 import InputField from "../../reuse-component/InputComponent/Input";
 import { useGetSupplierQuery } from "../../api/service/supplier.service";
 import { paymentMethod, paymentStatus } from "../../utils/enums";
+import DiscountAndTax from "./DiscountAndTax";
+import ProductDetails from "./ProductDetails";
+import { Fragment } from "react";
+import { usePurchaseProductMutation } from "../../api/service/Purchase.service";
+import dayjs from "dayjs";
 
 const DEFAULT_VALUES = {
   productType: "",
@@ -49,27 +57,12 @@ const ProductPurchase = () => {
   const location = useLocation();
   const navigation = useNavigate();
   const [searchParams] = useSearchParams();
-  const { productId } = useParams();
 
   // use searchParams
   const isUpdate = searchParams.get("isUpdate") === "true";
 
-  // SEARCH QUERY
-  const queryParams = () => {
-    const params = new URLSearchParams(location.search);
-    const queryObject = {};
-
-    params.forEach((value, key) => {
-      if (key == "pageSize" || key === "pageIndex") {
-        queryObject[key] = parseInt(value);
-      }
-    });
-    return queryObject;
-  };
-
   // LOCAL STATE
   const [defaultValues, setDefaultVales] = useState({ ...DEFAULT_VALUES });
-  const [unitState, setUnitState] = useState("");
 
   // Custom  function for unit
   const selectedUnit = (value) => {
@@ -97,11 +90,7 @@ const ProductPurchase = () => {
   });
 
   // ===================|| PRODUCTS QUERY  ||=====================
-  const {
-    data: products,
-    isLoading: productIsLoading,
-    isSuccess: productIsSuccess,
-  } = useGetProductQuery(
+  const { data: products } = useGetProductQuery(
     { pageIndex: 0, pageSize: 10 },
     {
       skip: !user,
@@ -110,18 +99,12 @@ const ProductPurchase = () => {
 
   // ===================|| RTK HOOKS MUTATION ||=====================
   const [
-    createProduct,
-    { isLoading: createProductIsLoading, isSuccess: createProductIsSuccess },
-  ] = useCreateProductMutation();
-  const [
-    updateProduct,
-    { isLoading: updateProductIsLoading, isSuccess: updateProductIsSuccess },
-  ] = useUpdateProductMutation();
-
-  // => SINGLE PRODUCT GET BY ID
-  const { data: singleProduct } = useGetProductByIdQuery(productId, {
-    skip: !productId,
-  });
+    purchaseProduct,
+    {
+      isLoading: purchaseProductIsLoading,
+      // isSuccess: purchaseProductIsSuccess,
+    },
+  ] = usePurchaseProductMutation();
 
   // VALIDATION
   const validationSchema = Yup.object().shape({
@@ -143,9 +126,22 @@ const ProductPurchase = () => {
       defaultValuesProp: defaultValues,
     });
 
+  // console.log(formState.errors);
+
   //   FORM SUBMIT HANDLER
-  const formSubmit = (data) => {
-    console.log(data);
+  const formSubmit = ({ productsId, ...rest }) => {
+    // const emptyCheckObject =
+    const productId = productsId?.map((item) => item._id);
+    rest.productsId = productId;
+    rest.provideBalance = 400;
+    rest.totalDiscount = 100;
+    rest.totalPrice = 500;
+    purchaseProduct({
+      data: { ...rest },
+      setError,
+      reset,
+      merchantId: user?.merchant,
+    });
   };
 
   //   FORM DATA
@@ -230,39 +226,12 @@ const ProductPurchase = () => {
     lg: 3,
   };
 
-  // PRODUCT USE_EFFECT
-  useEffect(() => {
-    if (createProductIsSuccess || updateProductIsSuccess) {
-      navigation("/products");
-    }
-  }, [createProductIsSuccess, updateProductIsSuccess]);
-
-  // PRODUCT USE_EFFECT
-  useEffect(() => {
-    if (singleProduct) {
-      setDefaultVales({ ...singleProduct });
-    }
-  }, [singleProduct]);
-
-  // => THIS USE EFFECT USE FOR UNIT VALIDATION
-  useEffect(() => {
-    const schemaFields = selectedUnit(watch("unit")).reduce((acc, curr) => {
-      if (curr) {
-        acc[curr] = Yup.string().required(`${curr} is a required field`);
-      }
-      return acc;
-    }, {});
-    setUnitState(schemaFields);
-  }, [watch("unit")]);
-
-  console.log(watch("productsId"));
-
   return (
     <>
       <MainCard title="Product Purchase">
-        <Stack component={"form"} onSubmit={handleSubmit(formSubmit)}>
-          <Grid container spacing={3}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Stack component={"form"} onSubmit={handleSubmit(formSubmit)}>
+            <Grid container spacing={3}>
               <InputField
                 formData={formData}
                 column={column}
@@ -316,195 +285,227 @@ const ProductPurchase = () => {
                   }}
                 />
               </Grid>
-            </LocalizationProvider>
-          </Grid>
+            </Grid>
 
-          {/* PRODUCT MULTI-SELECTED */}
+            {/* PRODUCT MULTI-SELECTED */}
 
-          {/*EACH PRODUCT QUANTITY   */}
-          {selectedUnit(watch("unit")).length > 0 && (
-            <MainCard title={"Each Product Quantity"}>
-              <Grid container spacing={2}>
-                {selectedUnit(watch("unit")).map((item, index) => {
-                  return (
-                    <Grid item xs={12} md={6} lg={4} key={index}>
-                      <InputLabel
-                        sx={{ display: "flex", alignItems: "center" }}
-                      >
-                        {item}
-                        <span style={{ color: "red", marginLeft: "4px" }}>
-                          *
-                        </span>
-                      </InputLabel>
+            {watch("productsId")?.length > 0 && (
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">Name</TableCell>
+                      <TableCell align="center">Unit</TableCell>
+                      <TableCell align="center">Tax</TableCell>
+                      <TableCell align="center">Discount</TableCell>
+                      <TableCell align="center">
+                        Each Product Quantity
+                      </TableCell>
+                      <TableCell align="center">Product Quantity</TableCell>
+                      <TableCell align="center">Purchase Price</TableCell>
+                      <TableCell align="center"> Sale Price</TableCell>
+                      <TableCell align="center"> ExpireDate</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {watch("productsId")?.map((row, index) => {
+                      setValue(`products[${index}].unit`, row.unit);
+                      setValue(`products[${index}].product`, row._id);
+                      return (
+                        <TableRow
+                          key={row._id}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                        >
+                          <TableCell align="center">
+                            {row.productName}
+                          </TableCell>
+                          <TableCell align="center">{row.unit}</TableCell>
+                          <TableCell align="center">
+                            <DiscountAndTax
+                              {...{
+                                control,
+                                name1: `products[${index}].tax.amount`,
+                                name2: `products[${index}].tax.percentage`,
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell align="center">
+                            <DiscountAndTax
+                              {...{
+                                control,
+                                name1: `products[${index}].discount.amount`,
+                                name2: `products[${index}].discount.percentage`,
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell align="center">
+                            <Grid
+                              container
+                              spacing={1}
+                              gap={1}
+                              justifyContent="start"
+                              alignItems="center"
+                            >
+                              {selectedUnit(row.unit).map((item, unitIndex) => {
+                                return (
+                                  <Fragment key={unitIndex}>
+                                    <ProductDetails
+                                      {...{
+                                        name: `products[${index}].eachProductQuantity.${[
+                                          item,
+                                        ]}`,
+                                        control,
+                                        index,
+                                        item,
+                                      }}
+                                    />
+                                  </Fragment>
+                                );
+                              })}
+                            </Grid>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Grid
+                              container
+                              spacing={1}
+                              gap={1}
+                              justifyContent="start"
+                              alignItems="center"
+                            >
+                              {selectedUnit(row.unit).map((item, unitIndex) => {
+                                return (
+                                  <Fragment key={unitIndex}>
+                                    <ProductDetails
+                                      {...{
+                                        name: `products[${index}].productQuantity.${[
+                                          item,
+                                        ]}`,
+                                        control,
+                                        index,
+                                        item,
+                                      }}
+                                    />
+                                  </Fragment>
+                                );
+                              })}
+                            </Grid>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Grid
+                              container
+                              spacing={1}
+                              gap={1}
+                              justifyContent="start"
+                              alignItems="center"
+                            >
+                              {selectedUnit(row.unit).map((item, unitIndex) => {
+                                return (
+                                  <Fragment key={unitIndex}>
+                                    <ProductDetails
+                                      {...{
+                                        name: `products[${index}].purchasePrice.[${[
+                                          item,
+                                        ]}]`,
+                                        control,
+                                        index,
+                                        item,
+                                      }}
+                                    />
+                                  </Fragment>
+                                );
+                              })}
+                            </Grid>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Grid
+                              container
+                              spacing={1}
+                              gap={1}
+                              justifyContent="start"
+                              alignItems="center"
+                            >
+                              {selectedUnit(row.unit).map((item, unitIndex) => {
+                                return (
+                                  <Fragment key={unitIndex}>
+                                    <ProductDetails
+                                      {...{
+                                        name: `products[${index}].salePrice.${[
+                                          item,
+                                        ]}`,
+                                        control,
+                                        index,
+                                        item,
+                                      }}
+                                    />
+                                  </Fragment>
+                                );
+                              })}
+                            </Grid>
+                          </TableCell>
 
-                      <Controller
-                        control={control}
-                        name={`eachProductQuantity.${item}`}
-                        render={({ field, fieldState: { error } }) => (
-                          <TextField
-                            {...field}
-                            size="small"
-                            inputRef={field.ref}
-                            type="number"
-                            placeholder={`Enter Product Quantity ${item}`}
-                            value={field.value}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            error={Boolean(error)}
-                            helperText={error?.message}
-                            fullWidth
-                          />
-                        )}
-                      />
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </MainCard>
-          )}
-          {/* PRODUCT QUANTITY   */}
-          {selectedUnit(watch("unit")).length > 0 && (
-            <MainCard title={"Product Quantity"}>
-              <Grid container spacing={2}>
-                {selectedUnit(watch("unit")).map((item, index) => {
-                  return (
-                    <Grid item xs={12} md={6} lg={4} key={index}>
-                      <InputLabel
-                        sx={{ display: "flex", alignItems: "center" }}
-                      >
-                        {item}
-                        <span style={{ color: "red", marginLeft: "4px" }}>
-                          *
-                        </span>
-                      </InputLabel>
+                          <TableCell align="center">
+                            <Controller
+                              name={`products[${index}].expDate`}
+                              control={control}
+                              render={({ field, fieldState: { error } }) => (
+                                <>
+                                  <DatePicker
+                                    format={"MMMM DD, YYYY"}
+                                    value={dayjs(field.value)}
+                                    inputRef={field.ref}
+                                    onChange={(date) =>
+                                      field.onChange(dayjs(date).toISOString())
+                                    }
+                                    slotProps={{
+                                      textField: {
+                                        sx: { width: "9rem" },
+                                        error: Boolean(error),
+                                        size: "small",
+                                      },
+                                    }}
+                                  />
+                                  {Boolean(error) && (
+                                    <FormHelperText error>
+                                      {error?.message}
+                                    </FormHelperText>
+                                  )}
+                                </>
+                              )}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
 
-                      <Controller
-                        control={control}
-                        name={`productQuantity.${item}`}
-                        render={({ field, fieldState: { error } }) => (
-                          <TextField
-                            {...field}
-                            size="small"
-                            inputRef={field.ref}
-                            type="number"
-                            placeholder={`Enter Product Quantity ${item}`}
-                            value={field.value}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            error={Boolean(error)}
-                            helperText={error?.message}
-                            fullWidth
-                          />
-                        )}
-                      />
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </MainCard>
-          )}
-          {/* PRODUCT PURCHASE PRICE   */}
-          {selectedUnit(watch("unit")).length > 0 && (
-            <MainCard title={"Product Purchase Price"}>
-              <Grid container spacing={2}>
-                {selectedUnit(watch("unit")).map((item, index) => {
-                  return (
-                    <Grid item xs={12} md={6} lg={4} key={index}>
-                      <InputLabel
-                        sx={{ display: "flex", alignItems: "center" }}
-                      >
-                        {item}
-                        <span style={{ color: "red", marginLeft: "4px" }}>
-                          *
-                        </span>
-                      </InputLabel>
-
-                      <Controller
-                        control={control}
-                        name={`purchasePrice.${item}`}
-                        render={({ field, fieldState: { error } }) => (
-                          <TextField
-                            {...field}
-                            size="small"
-                            inputRef={field.ref}
-                            type="number"
-                            placeholder={`Enter Purchase Price ${item}`}
-                            value={field.value}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            error={Boolean(error)}
-                            helperText={error?.message}
-                            fullWidth
-                          />
-                        )}
-                      />
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </MainCard>
-          )}
-          {/* PRODUCT SALE PRICE   */}
-
-          {selectedUnit(watch("unit")).length > 0 && (
-            <MainCard title={"Product Sale Price"}>
-              <Grid container spacing={2}>
-                {selectedUnit(watch("unit")).map((item, index) => {
-                  return (
-                    <Grid item xs={12} md={6} lg={4} key={index}>
-                      <InputLabel
-                        sx={{ display: "flex", alignItems: "center" }}
-                      >
-                        {item}
-                        <span style={{ color: "red", marginLeft: "4px" }}>
-                          *
-                        </span>
-                      </InputLabel>
-
-                      <Controller
-                        control={control}
-                        name={`salePrice.${item}`}
-                        render={({ field, fieldState: { error } }) => (
-                          <TextField
-                            {...field}
-                            size="small"
-                            inputRef={field.ref}
-                            type="number"
-                            placeholder={`Enter Sale Price ${item}`}
-                            value={field.value}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            error={Boolean(error)}
-                            helperText={error?.message}
-                            fullWidth
-                          />
-                        )}
-                      />
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </MainCard>
-          )}
-
-          {/* SUBMIT BUTTON  */}
-          <Stack>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="flex-end"
-              spacing={2}
-              mt={4}
-            >
-              <LoadingButton
-                size="small"
-                endIcon={<SendIcon />}
-                loading={createProductIsLoading || updateProductIsLoading}
-                loadingPosition="end"
-                variant="contained"
-                type="submit"
+            {/* SUBMIT BUTTON  */}
+            <Stack>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="flex-end"
+                spacing={2}
+                mt={4}
               >
-                {isUpdate ? "Update" : "Submit"}
-              </LoadingButton>
+                <LoadingButton
+                  size="small"
+                  endIcon={<SendIcon />}
+                  loading={purchaseProductIsLoading}
+                  loadingPosition="end"
+                  variant="contained"
+                  type="submit"
+                >
+                  {isUpdate ? "Update" : "Submit"}
+                </LoadingButton>
+              </Stack>
             </Stack>
           </Stack>
-        </Stack>
+        </LocalizationProvider>
       </MainCard>
     </>
   );

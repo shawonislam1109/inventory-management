@@ -150,7 +150,7 @@ export default function SignUp() {
 
   useEffect(() => {
     if (isSuccess) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [isSuccess]);
 

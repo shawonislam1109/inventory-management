@@ -16,6 +16,7 @@ import {
   TableRow,
   TextField,
   Typography,
+  Skeleton,
 } from "@mui/material";
 
 import { flexRender } from "@tanstack/react-table";
@@ -39,7 +40,12 @@ function RenderRowAndColumn({
   getPageCount,
   lastPage,
   setPageIndex,
+  isLoading,
+  getAllColumns,
 }) {
+  // LOADING FUNCTION
+  const loadingFuncForSkelton = Array(getAllColumns().length).fill({});
+
   return (
     <Box>
       {/* <ScrollX> */}
@@ -116,28 +122,51 @@ function RenderRowAndColumn({
             ))}
           </TableHead>
           <TableBody>
-            {getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{
-                  backgroundColor: "white",
-                  "&:nth-of-type(even)": {
-                    backgroundColor: "#dfe8e5",
-                  },
-                  "&:hover": {
-                    backgroundColor: "#dfe8e5",
-                    transition: "background-color 0.3s ease",
-                    cursor: "pointer",
-                  },
-                }}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} align="center">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
+            {!isLoading
+              ? getRowModel().rows.map((row) => {
+                  return (
+                    <TableRow
+                      key={row.id}
+                      sx={{
+                        backgroundColor: "white",
+                        "&:nth-of-type(even)": {
+                          backgroundColor: "#dfe8e5",
+                        },
+                        "&:hover": {
+                          backgroundColor: "#dfe8e5",
+                          transition: "background-color 0.3s ease",
+                          cursor: "pointer",
+                        },
+                      }}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id} align="center">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  );
+                })
+              : loadingFuncForSkelton.map((item, index) => {
+                  return (
+                    <TableRow key={index}>
+                      {loadingFuncForSkelton.map((item2, index2) => {
+                        return (
+                          <TableCell key={index2}>
+                            <Skeleton
+                              sx={{ borderRadius: "0.3rem" }}
+                              variant="text"
+                              height={"2rem"}
+                            />
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
           </TableBody>
         </Table>
       </TableContainer>
@@ -257,6 +286,8 @@ RenderRowAndColumn.propTypes = {
   getPageCount: PropTypes.func,
   lastPage: PropTypes.number,
   setPageIndex: PropTypes.func,
+  getAllColumns: PropTypes.func,
+  isLoading: PropTypes.bool,
 };
 
 export default RenderRowAndColumn;

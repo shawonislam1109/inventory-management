@@ -6,6 +6,7 @@ import Category from "../pages/inventory/product/category/Category.jsx";
 import ProductAddAndUpdate from "../pages/inventory/product/product-add/AddProduct.jsx";
 import Stock from "../pages/stock/Stock.jsx";
 import ProductPurchase from "../pages/purchase/AddPurchase.jsx";
+import PurchaseList from "../pages/purchase/PurchaseList/PurchaseList.jsx";
 const Product = lazy(() => import("../pages/inventory/product/Product.jsx"));
 
 const mainRoutes = [
@@ -40,6 +41,15 @@ const mainRoutes = [
   },
 
   // DASHBOARD ROUTES
+  {
+    path: "",
+    children: [
+      {
+        path: "",
+        element: <Dashboard />,
+      },
+    ],
+  },
   {
     path: "/dashboard",
     children: [
@@ -91,6 +101,10 @@ const mainRoutes = [
       {
         path: "",
         element: <ProductPurchase />,
+      },
+      {
+        path: "list",
+        element: <PurchaseList />,
       },
     ],
   },

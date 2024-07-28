@@ -85,7 +85,7 @@ function TableComponent({
   useEffect(() => {
     if (tableData) {
       setData([...tableData]);
-    } else {
+    } else if (isLoading) {
       setData([]);
     }
   }, [tableData]);
@@ -376,6 +376,8 @@ function TableComponent({
             getPageCount,
             lastPage,
             setPageIndex,
+            isLoading,
+            getAllColumns,
           }}
         />
       </Stack>
