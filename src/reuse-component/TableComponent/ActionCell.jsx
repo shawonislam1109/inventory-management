@@ -71,6 +71,7 @@ function LongMenu({ menuItems, row }) {
         }}
       >
         {menuItems.map((item) => {
+          console.log(item);
           // eslint-disable-next-line no-extra-boolean-cast
           if (!!Object.keys(item).length) {
             return (
@@ -78,7 +79,7 @@ function LongMenu({ menuItems, row }) {
                 key={item.title}
                 onClick={(e) => {
                   e.stopPropagation();
-                  item.handleClick(row?.original);
+                  item?.handleClick(row?.original);
                   handleClose();
                 }}
               >

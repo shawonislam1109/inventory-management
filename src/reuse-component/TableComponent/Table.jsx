@@ -61,6 +61,7 @@ function TableComponent({
   isServerPagination,
   SetServerPaginationPageIndex,
   serverPaginationPageIndex,
+  extraHeader,
 }) {
   // pagination state
   const [pagination, setPagination] = useState({
@@ -228,6 +229,8 @@ function TableComponent({
         <Stack direction="row" flexWrap="wrap" gap={1} alignItems="center">
           {/* IF HEADER HAS AN EXTRA CONTENT */}
           {/* {endHeaderContent && endHeaderContent} */}
+
+          {extraHeader && extraHeader}
 
           {/* TABLE COLUMN VISIBILITY MENU */}
 
@@ -400,6 +403,7 @@ TableComponent.propTypes = {
   tableColumns: PropTypes.array,
   tableDependency: PropTypes.array,
   tableData: PropTypes.array,
+  extraHeader: PropTypes.node,
 };
 
 export default TableComponent;

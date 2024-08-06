@@ -7,6 +7,7 @@ import ProductAddAndUpdate from "../pages/inventory/product/product-add/AddProdu
 import Stock from "../pages/stock/Stock.jsx";
 import ProductPurchase from "../pages/purchase/AddPurchase.jsx";
 import PurchaseList from "../pages/purchase/PurchaseList/PurchaseList.jsx";
+import Invoice from "../pages/purchase/purchase-invoice/Invoice.jsx";
 const Product = lazy(() => import("../pages/inventory/product/Product.jsx"));
 
 const mainRoutes = [
@@ -105,6 +106,10 @@ const mainRoutes = [
       {
         path: "list",
         element: <PurchaseList />,
+      },
+      {
+        path: `:purchaseId/invoice`,
+        element: <Invoice />,
       },
     ],
   },

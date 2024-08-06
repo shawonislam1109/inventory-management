@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 
 import { DeleteFilled } from "@ant-design/icons";
 import useAuth from "../../../hooks/useAuth";
@@ -8,10 +8,15 @@ import { useGetProductPurchaseQuery } from "../../../api/service/Purchase.servic
 import TableComponent from "../../../reuse-component/TableComponent/Table";
 import ActionCell from "../../../reuse-component/TableComponent/ActionCell";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
+import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
+import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
 
 const PurchaseList = () => {
   // USE AUTH HOOKS
   const { user } = useAuth();
+  const navigate = useNavigate();
+
   // LOCAL STATE FOR PAGINATION
   const [productPurchasePagination, setProductPurchasePagination] = useState({
     pageIndex: 0,
@@ -42,7 +47,50 @@ const PurchaseList = () => {
     handleDialogOpen();
   };
 
+  // INVOICE HANDLER
+  const invoiceHandler = (purchase) => {
+    console.log("sdlfdl");
+    navigate(`/purchase/${purchase?._id}/invoice`);
+  };
+
   //   const deleteHandleSubmission = () => {};
+
+  const downloadZip = () => {
+    fetch("http://localhost:9191/products/purchase/file", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      method: "GET",
+    })
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "download.zip");
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+      })
+      .catch((err) => console.error("Error while downloading zip:", err));
+  };
+
+  const ExtraHeader = ({ downloadZip }) => {
+    return (
+      <Button
+        onClick={downloadZip}
+        variant="outlined"
+        color="success"
+        startIcon={<CloudDownloadOutlinedIcon />}
+      >
+        Client hotspot file
+      </Button>
+    );
+  };
+
+  ExtraHeader.propTypes = {
+    downloadZip: PropTypes.func,
+  };
 
   // Table columns
   const tableColumns = [
@@ -76,18 +124,17 @@ const PurchaseList = () => {
               ellipsis={true}
               row={row}
               isExpandable={false}
-              //   setOpen={(data) => updateProductHandler(data)}
+              hasEditButton={false}
               permissionKey="Product"
               menuItems={[
                 {
                   title: "Delete",
                   icon: <DeleteFilled />,
-                  //   handleClick: deleteProductHandler,
                 },
                 {
                   title: "Invoice",
                   icon: <ReceiptOutlinedIcon />,
-                  //   handleClick: deleteProductHandler,
+                  handleClick: invoiceHandler,
                 },
               ]}
             />
@@ -114,6 +161,7 @@ const PurchaseList = () => {
           serverPaginationPageIndex: productPurchasePagination,
           SetServerPaginationPageIndex: setProductPurchasePagination,
           isServerPagination: true,
+          extraHeader: <ExtraHeader downloadZip={downloadZip} />,
         }}
       />
 

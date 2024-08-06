@@ -14,6 +14,28 @@ export const productPurchaseApi = api.injectEndpoints({
         return res.data;
       },
     }),
+    getProductSinglePurchase: build.query({
+      query: (purchaseId) => {
+        return {
+          url: `/products/purchase/purchase/${purchaseId}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (res) => {
+        return res.data;
+      },
+    }),
+    getProductSinglePurchaseInvoice: build.query({
+      query: (purchaseId) => {
+        return {
+          url: `/products/purchase/invoice/${purchaseId}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (res) => {
+        return res.data;
+      },
+    }),
 
     // CREATE PRODUCT
     purchaseProduct: build.mutation({
@@ -25,7 +47,7 @@ export const productPurchaseApi = api.injectEndpoints({
         };
       },
       async onQueryStarted(
-        { handleCloseDialog, merchant, setError, reset },
+        { merchant, reset, navigate },
         { dispatch, queryFulfilled }
       ) {
         try {
@@ -52,7 +74,7 @@ export const productPurchaseApi = api.injectEndpoints({
               }
             )
           );
-          handleCloseDialog();
+          navigate(`/purchase/${data?._id}/invoice`);
           reset();
         } catch (error) {
           console.log(error);
@@ -98,6 +120,8 @@ export const productPurchaseApi = api.injectEndpoints({
 
 export const {
   // get product and get product store
+  useGetProductSinglePurchaseInvoiceQuery,
+  useGetProductSinglePurchaseQuery,
   useGetProductPurchaseQuery,
   useGetProductQuery,
   useGetProductTrashQuery,

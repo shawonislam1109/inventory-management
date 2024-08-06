@@ -55,7 +55,7 @@ const ProductPurchase = () => {
 
   // REACT ROUTER DOM HOOKS
   const location = useLocation();
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   // use searchParams
@@ -120,7 +120,7 @@ const ProductPurchase = () => {
   });
 
   // HANDLE USE HOOKS FORM
-  const { handleSubmit, control, formState, watch, setError, setValue, reset } =
+  const { handleSubmit, control, watch, setError, setValue, reset } =
     useFormHook({
       validationSchema,
       defaultValuesProp: defaultValues,
@@ -129,7 +129,7 @@ const ProductPurchase = () => {
   // console.log(formState.errors);
 
   //   FORM SUBMIT HANDLER
-  const formSubmit = ({ productsId, ...rest }) => {
+  const formSubmit = async ({ productsId, ...rest }) => {
     // const emptyCheckObject =
     const productId = productsId?.map((item) => item._id);
     rest.productsId = productId;
@@ -141,6 +141,7 @@ const ProductPurchase = () => {
       setError,
       reset,
       merchantId: user?.merchant,
+      navigate,
     });
   };
 

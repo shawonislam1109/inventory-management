@@ -45,7 +45,7 @@ const DiscountAndTax = ({ control, name1, name2 }) => {
               variant="outlined"
               label="percentage"
               value={field.value}
-              onChange={(e) => field.onChange(parseInt(e.target.value))}
+              onChange={(e) => field.onChange(Number(e.target.value))}
               sx={{ width: "9rem" }}
               error={Boolean(error)}
               helperText={error?.message}
